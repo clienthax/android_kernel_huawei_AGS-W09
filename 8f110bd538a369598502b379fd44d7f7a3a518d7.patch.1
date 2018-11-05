@@ -1,0 +1,140 @@
+From 8f110bd538a369598502b379fd44d7f7a3a518d7 Mon Sep 17 00:00:00 2001
+From: Vikas Reddy Pachika <vpachi@codeaurora.org>
+Date: Thu, 2 Feb 2017 15:07:13 +0530
+Subject: [PATCH] msm: vidc: Renaming the AU-Delimiter params/extens
+
+Renaming the H264 AU-Delimiter HAL and HFI params to generic
+params name.
+
+CRs-Fixed: 1082260
+Change-Id: Idfc565540c9f1ca8cf9a3f871b2988c0c4fda00e
+Signed-off-by: Vikas Reddy Pachika <vpachi@codeaurora.org>
+---
+ .../media/platform/msm/vidc/hfi_packetization.c  |  6 +++---
+ drivers/media/platform/msm/vidc/msm_venc.c       | 16 ++++++++--------
+ drivers/media/platform/msm/vidc/vidc_hfi_api.h   |  4 ++--
+ .../media/platform/msm/vidc/vidc_hfi_helper.h    |  4 ++--
+ include/uapi/linux/v4l2-controls.h               |  7 +++++++
+ 5 files changed, 22 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/media/platform/msm/vidc/hfi_packetization.c b/drivers/media/platform/msm/vidc/hfi_packetization.c
+index b3eeb2221448..d4e8a039c291 100644
+--- a/drivers/media/platform/msm/vidc/hfi_packetization.c
++++ b/drivers/media/platform/msm/vidc/hfi_packetization.c
+@@ -1,4 +1,4 @@
+-/* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
++/* Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 and
+@@ -1832,10 +1832,10 @@ int create_pkt_cmd_session_set_property(
+ 		pkt->size += sizeof(u32) + sizeof(struct hfi_enable);
+ 		break;
+ 	}
+-	case HAL_PARAM_VENC_H264_GENERATE_AUDNAL:
++	case HAL_PARAM_VENC_GENERATE_AUDNAL:
+ 	{
+ 		create_pkt_enable(pkt->rg_property_data,
+-				HFI_PROPERTY_PARAM_VENC_H264_GENERATE_AUDNAL,
++				HFI_PROPERTY_PARAM_VENC_GENERATE_AUDNAL,
+ 				((struct hal_enable *)pdata)->enable);
+ 		pkt->size += sizeof(u32) + sizeof(struct hfi_enable);
+ 		break;
+diff --git a/drivers/media/platform/msm/vidc/msm_venc.c b/drivers/media/platform/msm/vidc/msm_venc.c
+index 026274c76109..d059ca5dddb2 100644
+--- a/drivers/media/platform/msm/vidc/msm_venc.c
++++ b/drivers/media/platform/msm/vidc/msm_venc.c
+@@ -861,14 +861,14 @@ static struct msm_vidc_ctrl msm_venc_ctrls[] = {
+ 		.step = 1,
+ 	},
+ 	{
+-		.id = V4L2_CID_MPEG_VIDC_VIDEO_H264_AU_DELIMITER,
++		.id = V4L2_CID_MPEG_VIDC_VIDEO_AU_DELIMITER,
+ 		.name = "H264 AU Delimiter",
+ 		.type = V4L2_CTRL_TYPE_BOOLEAN,
+-		.minimum = V4L2_MPEG_VIDC_VIDEO_H264_AU_DELIMITER_DISABLED,
+-		.maximum = V4L2_MPEG_VIDC_VIDEO_H264_AU_DELIMITER_ENABLED,
++		.minimum = V4L2_MPEG_VIDC_VIDEO_AU_DELIMITER_DISABLED,
++		.maximum = V4L2_MPEG_VIDC_VIDEO_AU_DELIMITER_ENABLED,
+ 		.step = 1,
+ 		.default_value =
+-			V4L2_MPEG_VIDC_VIDEO_H264_AU_DELIMITER_DISABLED,
++			V4L2_MPEG_VIDC_VIDEO_AU_DELIMITER_DISABLED,
+ 	},
+ 	{
+ 		.id = V4L2_CID_MPEG_VIDC_SET_PERF_LEVEL,
+@@ -3293,14 +3293,14 @@ static int try_set_ctrl(struct msm_vidc_inst *inst, struct v4l2_ctrl *ctrl)
+ 		pdata = &vui_timing_info;
+ 		break;
+ 	}
+-	case V4L2_CID_MPEG_VIDC_VIDEO_H264_AU_DELIMITER:
+-		property_id = HAL_PARAM_VENC_H264_GENERATE_AUDNAL;
++	case V4L2_CID_MPEG_VIDC_VIDEO_AU_DELIMITER:
++		property_id = HAL_PARAM_VENC_GENERATE_AUDNAL;
+ 
+ 		switch (ctrl->val) {
+-		case V4L2_MPEG_VIDC_VIDEO_H264_AU_DELIMITER_DISABLED:
++		case V4L2_MPEG_VIDC_VIDEO_AU_DELIMITER_DISABLED:
+ 			enable.enable = 0;
+ 			break;
+-		case V4L2_MPEG_VIDC_VIDEO_H264_AU_DELIMITER_ENABLED:
++		case V4L2_MPEG_VIDC_VIDEO_AU_DELIMITER_ENABLED:
+ 			enable.enable = 1;
+ 			break;
+ 		default:
+diff --git a/drivers/media/platform/msm/vidc/vidc_hfi_api.h b/drivers/media/platform/msm/vidc/vidc_hfi_api.h
+index f65f888ff2ce..42ea8f72acfe 100644
+--- a/drivers/media/platform/msm/vidc/vidc_hfi_api.h
++++ b/drivers/media/platform/msm/vidc/vidc_hfi_api.h
+@@ -1,4 +1,4 @@
+-/* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
++/* Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 and
+@@ -201,7 +201,7 @@ enum hal_property {
+ 	HAL_PARAM_VENC_H264_ENTROPY_CABAC_MODEL,
+ 	HAL_CONFIG_VENC_MAX_BITRATE,
+ 	HAL_PARAM_VENC_H264_VUI_TIMING_INFO,
+-	HAL_PARAM_VENC_H264_GENERATE_AUDNAL,
++	HAL_PARAM_VENC_GENERATE_AUDNAL,
+ 	HAL_PARAM_VENC_MAX_NUM_B_FRAMES,
+ 	HAL_PARAM_BUFFER_ALLOC_MODE,
+ 	HAL_PARAM_VDEC_FRAME_ASSEMBLY,
+diff --git a/drivers/media/platform/msm/vidc/vidc_hfi_helper.h b/drivers/media/platform/msm/vidc/vidc_hfi_helper.h
+index bb9958b0a819..31af06cd88ef 100644
+--- a/drivers/media/platform/msm/vidc/vidc_hfi_helper.h
++++ b/drivers/media/platform/msm/vidc/vidc_hfi_helper.h
+@@ -1,4 +1,4 @@
+-/* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
++/* Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 and
+@@ -340,7 +340,7 @@ struct hfi_buffer_info {
+ 	(HFI_PROPERTY_PARAM_VENC_COMMON_START + 0x014)
+ #define  HFI_PROPERTY_PARAM_VENC_H264_PPS_ID               \
+ 	(HFI_PROPERTY_PARAM_VENC_COMMON_START + 0x015)
+-#define HFI_PROPERTY_PARAM_VENC_H264_GENERATE_AUDNAL	\
++#define HFI_PROPERTY_PARAM_VENC_GENERATE_AUDNAL	\
+ 	(HFI_PROPERTY_PARAM_VENC_COMMON_START + 0x016)
+ #define HFI_PROPERTY_PARAM_VENC_ASPECT_RATIO			\
+ 	(HFI_PROPERTY_PARAM_VENC_COMMON_START + 0x017)
+diff --git a/include/uapi/linux/v4l2-controls.h b/include/uapi/linux/v4l2-controls.h
+index 7e5104337c9f..1260110225a9 100644
+--- a/include/uapi/linux/v4l2-controls.h
++++ b/include/uapi/linux/v4l2-controls.h
+@@ -1216,6 +1216,13 @@ enum v4l2_mpeg_vidc_video_venc_iframesize_type {
+ #define V4L2_CID_MPEG_VIDC_VIDEO_B_FRAME_QP \
+ 		(V4L2_CID_MPEG_MSM_VIDC_BASE + 103)
+ 
++#define V4L2_CID_MPEG_VIDC_VIDEO_AU_DELIMITER \
++		(V4L2_CID_MPEG_MSM_VIDC_BASE + 104)
++enum v4l2_mpeg_vidc_video_au_delimiter {
++	V4L2_MPEG_VIDC_VIDEO_AU_DELIMITER_DISABLED = 0,
++	V4L2_MPEG_VIDC_VIDEO_AU_DELIMITER_ENABLED = 1
++};
++
+ 
+ /*  Camera class control IDs */
+ 
