@@ -28,3 +28,5 @@
 	/delete-property/ qcom,dsi-pll-ssc-mode;
 };
 
+
+#include "ags-w09-early-mount.dtsi"
